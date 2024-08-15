@@ -5,8 +5,8 @@ https://khoroch-app.vercel.app/
 ## Todo
 - [x] Login
 - [x] Registration
-- [ ] Login page error validation
-- [ ] Registration page error validation
+- [x] Login page validation error
+- [ ] Registration page validation error
 - [x] Transaction
   - [x] Create
   - [x] View

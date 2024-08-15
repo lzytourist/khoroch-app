@@ -31,7 +31,7 @@ export async function signup(formData: FormData) {
   }
 }
 
-export async function signin(formData: FormData) {
+export async function signin(prev: any, formData: FormData) {
   const validation = SignInSchema.safeParse({
     email: formData.get('email'),
     password: formData.get('password'),
@@ -49,6 +49,10 @@ export async function signin(formData: FormData) {
       redirect('/dashboard');
     }
   }
+
+  return {
+    message: 'Wrong credentials'
+  };
 }
 
 export async function signout(formData: FormData) {
