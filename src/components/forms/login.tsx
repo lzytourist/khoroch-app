@@ -13,10 +13,12 @@ export default function LoginForm() {
   const [state, action] = useFormState(signin, null);
 
   useEffect(() => {
-    toast({
-      title: state?.message,
-      variant: 'destructive'
-    });
+    if (state && state?.message) {
+      toast({
+        title: state.message,
+        variant: 'destructive'
+      });
+    }
   }, [state]);
 
   return (
