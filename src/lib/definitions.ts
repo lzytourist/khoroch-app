@@ -24,6 +24,6 @@ export const SignInSchema = z.object({
 export const TransactionSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   note: z.string().min(0),
-  amount: z.string().min(1).refine((amount) => parseInt(amount)),
+  amount: z.coerce.number().int().gte(1),
   type: z.enum(['BALANCE', 'EXPENSE', 'LOAN_TAKEN', 'LOAN_GIVEN']),
 });

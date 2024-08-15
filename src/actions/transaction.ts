@@ -1,3 +1,5 @@
+'use server'
+
 import {prisma} from "@/lib/db";
 import {getSession} from "@/lib/jwt";
 import {TransactionSchema} from "@/lib/definitions";
@@ -51,34 +53,37 @@ export async function getTransactions(limit: number = 15, skip: number = 0, type
   };
 }
 
-export async function insertTransaction(formData: FormData) {
+export async function insertTransaction(prev: any, formData: FormData) {
   const validation = TransactionSchema.safeParse({
     title: formData.get('title'),
     amount: formData.get('amount'),
     note: formData.get('note'),
     type: formData.get('transactionType'),
   });
-  if (validation.success) {
-    const {data} = validation;
 
-    const session = await getSession();
-    if (session?.user) {
-      await prisma.transaction.create({
-        data: {
-          // @ts-ignore
-          userId: session.user.id,
-          title: data.title,
-          note: data.note,
-          amount: parseInt(data.amount),
-          type: data.type
-        }
-      });
-      redirect('/dashboard/transactions');
-    }
+  if (validation.error) {
+    return validation.error?.flatten().fieldErrors;
+  }
+
+  const {data} = validation;
+
+  const session = await getSession();
+  if (session?.user) {
+    await prisma.transaction.create({
+      data: {
+        // @ts-ignore
+        userId: session.user.id,
+        title: data.title,
+        note: data.note,
+        amount: data.amount,
+        type: data.type
+      }
+    });
+    redirect('/dashboard/transactions');
   }
 }
 
-export async function updateTransaction(formData: FormData, transactionId: string) {
+export async function updateTransaction(prev: any, formData: FormData) {
   const session = await getSession();
 
   if (session?.user) {
@@ -89,6 +94,8 @@ export async function updateTransaction(formData: FormData, transactionId: strin
       type: formData.get('transactionType'),
     });
 
+    const transactionId = formData.get('id') as string;
+
     if (validation.success) {
       await prisma.transaction.update({
         where: {
@@ -98,7 +105,7 @@ export async function updateTransaction(formData: FormData, transactionId: strin
         },
         data: {
           title: validation.data.title,
-          amount: parseInt(validation.data.amount),
+          amount: validation.data.amount,
           note: validation.data.note,
           type: validation.data.type
         }

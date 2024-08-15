@@ -5,12 +5,7 @@ import {Label} from "@/components/ui/label";
 import {signup} from "@/actions/auth";
 import LoadingButton from "@/components/loading-button";
 import {useFormState} from "react-dom";
-
-function FieldError({message}: {message: string[] | null}) {
-  return (
-    <p className={'text-destructive text-sm'}>{message?.join(' ')}</p>
-  )
-}
+import FieldError from "@/components/field-error";
 
 export default function RegistrationForm() {
   const [state, action] = useFormState(signup, null);
