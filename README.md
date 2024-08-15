@@ -6,7 +6,7 @@ https://khoroch-app.vercel.app/
 - [x] Login
 - [x] Registration
 - [x] Login page validation error
-- [ ] Registration page validation error
+- [x] Registration page validation error
 - [x] Transaction
   - [x] Create
   - [x] View

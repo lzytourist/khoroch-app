@@ -7,7 +7,7 @@ import {redirect} from "next/navigation";
 import {createSession, destroySession} from "@/lib/jwt";
 import {NextResponse} from "next/server";
 
-export async function signup(formData: FormData) {
+export async function signup(prev: any, formData: FormData) {
   const validation = SignUpSchema.safeParse({
     name: formData.get('name'),
     email: formData.get('email'),
@@ -16,18 +16,26 @@ export async function signup(formData: FormData) {
   });
 
   if (validation.success) {
-    const hashedPassword = await hash(validation.data.password, 10);
-    const user = await prisma.user.create({
-      data: {
-        name: validation.data.name,
-        email: validation.data.email,
-        password: hashedPassword
+    try {
+      const hashedPassword = await hash(validation.data.password, 10);
+      const user = await prisma.user.create({
+        data: {
+          name: validation.data.name,
+          email: validation.data.email,
+          password: hashedPassword
+        }
+      });
+
+      await createSession({id: user.id, email: user.email, name: user.name});
+
+      redirect('/dashboard');
+    } catch (e) {
+      return {
+        email: ['Email already been taken.']
       }
-    });
-
-    await createSession({id: user.id, email: user.email, name: user.name});
-
-    redirect('/dashboard');
+    }
+  } else {
+    return validation.error?.flatten().fieldErrors;
   }
 }
 
